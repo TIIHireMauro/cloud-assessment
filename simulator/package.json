@@ -1,0 +1,15 @@
+{
+  "name": "simulator",
+  "version": "1.0.0",
+  "description": "For testing purposes: Sends random data every 2 seconds (replacing a real IoT device and providing data like temperature, humidity, etc) to the MQTT broker",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Mauro Pimentel",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mqtt": "^5.0.0"
+  }
+}

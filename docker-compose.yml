@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tiiassessment
+      POSTGRES_PASSWORD: dontforgettoprotectme
+      POSTGRES_DB: tiiassessment
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER_URL: mqtt://mosquitto:1883
+      MQTT_TOPIC: iot/data
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: tiiassessment
+      DB_PASSWORD: dontforgettoprotectme
+      DB_NAME: tiiassessment
+      PORT: 3000
+    depends_on:
+      - mosquitto
+      - postgres
+    ports:
+      - "3000:3000"
+
+  simulator:
+    build: ./simulator
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER_URL: mqtt://mosquitto:1883
+      MQTT_TOPIC: iot/data
+      PUBLISH_INTERVAL_MS: 2000
+    depends_on:
+      - mosquitto
+
+volumes:
+  pgdata:
