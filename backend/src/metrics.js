@@ -13,4 +13,19 @@ function incrementMqttMessages() {
   mqttMessagesCounter.inc();
 }
 
-module.exports = { register, incrementMqttMessages };
+// Gauge for the temperature
+const temperatureGauge = new client.Gauge({
+  name: 'sensor_temperature',
+  help: 'Current temperature reported by sensors'
+});
+register.registerMetric(temperatureGauge);
+
+// Gauge for the humidity
+const humidityGauge = new client.Gauge({
+  name: 'sensor_humidity',
+  help: 'Current humidity reported by sensors'
+});
+register.registerMetric(humidityGauge);
+
+
+module.exports = { register, incrementMqttMessages, temperatureGauge, humidityGauge };

@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 const { insertData } = require('./db');
-const { incrementMqttMessages } = require('./metrics');
+const { incrementMqttMessages, temperatureGauge, humidityGauge } = require('./metrics');
 require('dotenv').config();
 
 const brokerUrl = process.env.MQTT_BROKER_URL;
@@ -24,6 +24,12 @@ client.on('message', async (topic, message) => {
     const payload = JSON.parse(message.toString());
     await insertData(payload);
     incrementMqttMessages();
+    
+    // Update the metrics
+    temperatureGauge.set(Number(payload.temperature));
+    humidityGauge.set(Number(payload.humidity)); 
+    
+    
     console.log('Inserted MQTT message on DB:', payload);
   } catch (err) {
     console.error('Error processing MQTT message:', err);

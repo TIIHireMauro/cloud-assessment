@@ -1,4 +1,6 @@
 node_modules/
 .env
+.terraform
+.terraform.lock.hcl
 *.log
 .DS_Store
