@@ -1,0 +1,71 @@
+# This is the manifest for  
+# Usually it should be separated in files ConfigMap, Secret, Deployment, 
+# Service, etc., but for this assessment, I will use a single file to make it simpler
+
+# Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  POSTGRES_USER: dGlpYXNzZXNzbWVudA==         # "tiiassessment" in base64 (REMOVE THIS LINE BEFORE DEPLOYING)
+  POSTGRES_PASSWORD: ZG9udGZvcmdldHRvcHJvdGVjdG1l # "dontforgettoprotectme" in base64 (REMOVE THIS LINE BEFORE DEPLOYING)
+
+---
+
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "tiiassessment"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          emptyDir: {} # For local testing.
+
+---
+
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP # I'm using ClusterIP for this assessment so it cannot be accessed from outside the cluster

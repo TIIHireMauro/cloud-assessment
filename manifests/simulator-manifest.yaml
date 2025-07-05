@@ -1,0 +1,51 @@
+# This is the manifest for the simulator service
+# Usually it should be separated in files ConfigMap, Secret, Deployment,
+# Service, etc., but for this assessment, I will use a single file to make it simpler
+
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: simulator-config
+data:
+  MQTT_BROKER_URL: "mqtt://mosquitto:1883"
+  MQTT_TOPIC: "iot/data"
+  PUBLISH_INTERVAL_MS: "2000"
+
+---
+
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulator
+  template:
+    metadata:
+      labels:
+        app: simulator
+    spec:
+      containers:
+        - name: simulator
+          image: simulator:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MQTT_BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: simulator-config
+                  key: MQTT_BROKER_URL
+            - name: MQTT_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: simulator-config
+                  key: MQTT_TOPIC
+            - name: PUBLISH_INTERVAL_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: simulator-config
+                  key: PUBLISH_INTERVAL_MS
