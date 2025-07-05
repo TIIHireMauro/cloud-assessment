@@ -23,6 +23,27 @@ output "rds_endpoint" {
   value = module.rds.db_instance_endpoint
 }
 
+output "rds_master_user_secret_arn" {
+  value = module.rds.db_instance_master_user_secret_arn
+}
+
+
 output "lambda_simulator_arn" {
   value = aws_lambda_function.iot_simulator.arn
+}
+
+output "iot_core_thing_name" {
+  value = aws_iot_thing.sensor.name
+}
+
+output "iot_core_thing_arn" {
+  value = aws_iot_thing.sensor.arn
+}
+
+data "aws_iot_endpoint" "iot_endpoint" {
+  endpoint_type = "iot:Data-ATS"
+}
+
+output "iot_core_endpoint" {
+  value = data.aws_iot_endpoint.iot_endpoint.endpoint_address
 }

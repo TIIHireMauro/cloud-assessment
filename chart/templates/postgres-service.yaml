@@ -1,0 +1,15 @@
+# Service
+{{- if .Values.postgres.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP # I'm using ClusterIP for this assessment so it cannot be accessed from outside the cluster
+{{- end }}

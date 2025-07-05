@@ -13,7 +13,15 @@ module "rds" {
 
   db_name  = var.db_name
   username = var.db_username
-  password = var.db_password
+  
+  # This is a very important point. 
+  # With the next parameter, RDS will:
+  # 1 - Create a new master user password
+  # 2 - Store the password in the secrets manager
+  # 3 - Rotate the password every 7 days
+  # Also, the ARN of the secret will be exposed on outputs and used by Helm to configure the backend service account,
+  # protecting the password for the entire lifetime of the database, which is a good practice
+  manage_master_user_password = true
 
   port = 5432
 

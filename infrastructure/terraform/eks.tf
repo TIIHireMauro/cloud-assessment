@@ -9,7 +9,16 @@ module "eks" {
   subnet_ids      = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
 
-  cluster_endpoint_public_access  = false
+  # During the demo, I will use public access to access the cluster
+  cluster_endpoint_public_access  = true
+
+  # If doing demo, add Cidr block to the cluster
+  # To get your public ip, you can use the following command:
+  # (Invoke-WebRequest -Uri "https://ifconfig.me/ip" -UseBasicParsing).Content
+  cluster_endpoint_public_access_cidrs = ["4.210.159.129/32"]
+
+  # I'm using private access only for this assessment so it cannot be accessed from outside the cluster
+  # During the demo, I will use public access to access the cluster
   cluster_endpoint_private_access = true
 
   enable_irsa = true
@@ -24,6 +33,7 @@ module "eks" {
       subnets        = module.vpc.private_subnets
     }
   }
+
 
   tags = {
     Project = "TII Assessment - Architecting IoT Solutions"

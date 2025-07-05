@@ -1,0 +1,28 @@
+# Deployment
+{{- if .Values.simulator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulator
+  template:
+    metadata:
+      labels:
+        app: simulator
+    spec:
+      containers:
+        - name: simulator
+          image: {{ .Values.simulator.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MQTT_BROKER_URL
+              value: {{ .Values.simulator.env.MQTT_BROKER_URL | quote }}
+            - name: MQTT_TOPIC
+              value: {{ .Values.simulator.env.MQTT_TOPIC | quote }}
+            - name: PUBLISH_INTERVAL_MS
+              value: {{ .Values.simulator.env.PUBLISH_INTERVAL_MS | quote }}
+{{- end }}

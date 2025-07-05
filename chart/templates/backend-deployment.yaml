@@ -1,0 +1,46 @@
+# Deployment
+{{- if .Values.backend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MQTT_BROKER_URL
+              value: {{ .Values.backend.env.MQTT_BROKER_URL | quote }}
+            - name: MQTT_TOPIC
+              value: {{ .Values.backend.env.MQTT_TOPIC | quote }}
+            - name: DB_HOST
+              value: {{ .Values.backend.env.DB_HOST | quote }}
+            - name: DB_PORT
+              value: {{ .Values.backend.env.DB_PORT | quote }}
+            - name: DB_NAME
+              value: {{ .Values.backend.env.DB_NAME | quote }}
+            - name: PORT
+              value: {{ .Values.backend.env.PORT | quote }}
+            - name: DB_USER
+              value: {{ .Values.backend.env.DB_USER | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backend.env.DB_PASSWORD_SECRET_NAME }}
+                  key: {{ .Values.backend.env.DB_PASSWORD_SECRET_KEY }}
+
+{{- end }}

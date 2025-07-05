@@ -1,0 +1,23 @@
+# Service
+{{- if .Values.prometheus.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP # I'm using ClusterIP for this assessment so it cannot be accessed from outside the cluster
+  # This is an interesting point, as this service might be exposed to the outside world. In this case, here are some options:
+  # 1 - Use a VPN to access the cluster from outside the cluster, then the customer can have the dashboard only internally in the company
+  # 2 - Use a proxy to access the grafana dashboard from outside the cluster (although this is not a good idea, as it is not secure)
+  # 3 - Change the values-cloud.yaml to use some grafana instance in the cloud or to use NodePort or LoadBalancer to access the grafana dashboard from outside the cluster
+  # For this assessment, I will use ClusterIP to keep it simple. =)
+  # in order to access prometheus, youll need to make a port forwarding to the prometheus service
+  # kubectl port-forward svc/prometheus 9090:9090
+  # then you can access prometheus at http://localhost:9090
+{{- end }}

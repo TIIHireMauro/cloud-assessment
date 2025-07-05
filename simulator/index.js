@@ -13,7 +13,7 @@ client.on('connect', () => {
   setInterval(() => {
     // Generate random data
     const payload = {
-      deviceId: "sensor-001",
+      deviceId: "sensor-local",
       temperature: (20 + Math.random() * 10).toFixed(2),
       humidity: (40 + Math.random() * 20).toFixed(2),
       timestamp: new Date().toISOString()

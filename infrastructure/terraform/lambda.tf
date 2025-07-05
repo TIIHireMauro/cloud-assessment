@@ -40,7 +40,7 @@ resource "aws_lambda_function" "iot_simulator" {
     variables = {
       MQTT_BROKER_URL = "tii-iot-core-endpoint.amazonaws.com"
       MQTT_TOPIC      = "iot/data"
-      DEVICE_ID       = "sensor-001"
+      DEVICE_ID       = "sensor-lambda"
       PUBLISH_INTERVAL_MS = 2000
     }
   }
