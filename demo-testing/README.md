@@ -270,20 +270,25 @@ aws ecr batch-delete-image --repository-name backend --image-ids imageTag=latest
 ## 💰 AWS Costs
 
 ### Cost Estimate (approximate)
-- **EKS Cluster**: ~$70-100/month
-- **RDS PostgreSQL**: ~$30-50/month
-- **ECR**: ~$5-10/month (depending on usage)
-- **IoT Core**: ~$5-15/month
-- **Lambda**: ~$1-5/month
-- **VPC/NAT Gateway**: ~$45/month
+https://calculator.aws/#/estimate?id=b2af02a699d0e78d8e3f89714b4581ee14d6a5b0
 
-**Total estimated**: ~$150-225/month
+| Service            | Estimated Cost (USD/month) | Notes                                         |
+|--------------------|---------------------------|-----------------------------------------------|
+| EKS                | 70-100                    | Small cluster (2-3 t3.medium nodes)           |
+| RDS PostgreSQL     | 30-50                     | db.t3.micro instance, 20GB SSD                |
+| ECR                | 5-10                      | Docker image storage                          |
+| AWS IoT Core       | 5-15                      | Low message volume                            |
+| Lambda             | 1-5                       | Only for device simulation functions          |
+| NAT Gateway        | 45                        | Fixed monthly cost per gateway                |
+| Others (VPC, etc.) | 5-30                      | IPs, data transfer, logs                      |
+| **Total**          | **150-225**               |                                               |
 
 ### Tips to Reduce Costs
 1. Run tests only when necessary
 2. Use cleanup script after tests
 3. Configure AWS billing alerts
 4. Use spot instances for EKS (if possible)
+5. Make commitments/reservations for 1-3 years (RDS)
 
 ## 📝 Important Notes
 

@@ -6,7 +6,7 @@ The IoT Data Collector System is a microservices-based architecture designed to 
 
 ## 🏛️ High-Level Architecture
 
-![System Architecture](images/architecture.png)
+![System Architecture](docs/images/architecture.png)
 
 *For a detailed visual representation of the system architecture, see the diagram above.*
 
@@ -210,30 +210,29 @@ Git Push → GitHub Actions → Build → Test → Deploy
 ### Why These Technologies?
 
 #### 1. **MQTT Broker Choice**
-- **Local**: Mosquitto - Lightweight, easy to deploy
-- **Cloud**: AWS IoT Core - Managed service, enterprise features
+- **Local**: Mosquitto - As requested in the assessment. Didn't know it before, but I liked it.
+- **Cloud**: AWS IoT Core - I chose it because it is a dedicated managed service, highly scalable, and already includes the necessary security features to protect the environment, avoiding the complexity of load balancers and firewalls.
 
 #### 2. **Database Choice**
-- **PostgreSQL**: ACID compliance, JSON support, scalability
-- **RDS**: Managed service, automated backups, high availability
+- **PostgreSQL**: ACID compliance, JSON support, I chose it due to previous experience, as it is simple and compatible.
+- **RDS**: RDS already provides high availability, integrated backup, and security features (such as integration with secrets and rotation policies), saving a lot of time on infrastructure configurations. Additionally, it offers flexible pricing.
 
 #### 3. **Monitoring Stack**
-- **Prometheus**: Time-series database, powerful query language
-- **Grafana**: Rich visualization, alerting capabilities
+- **Prometheus and Grafana**: As requested in the assessment. I like these options; they are ideal for the project. I kept everything in containers to facilitate portability and avoid impacting users during the migration. However, both Grafana and Prometheus could be converted to managed services, which would greatly simplify access security management without the need to configure mappings or VPNs for dashboard access.
 
 #### 4. **Container Orchestration**
-- **Kubernetes**: Industry standard, portability
-- **EKS**: Managed service, AWS integration
+- **Kubernetes**: I chose KinD for its simplicity.
+- **EKS**: It is a robust and reliable system for managing containers, in addition to being integrated with secrets (via ESO) and allowing for high availability management with great ease.
 
 #### 5. **Infrastructure as Code**
-- **Terraform**: Multi-cloud support, state management
-- **Helm**: Kubernetes package management
+- **Terraform**:  Multi-cloud portability and provides clear infrastructure development, making it useful even for beginners.
+- **Helm**: I choose it because it allows the same project to be reused both locally and in the cloud, making tests/demos much easier.
 
 ## 📈 Scalability Considerations
 
 ### Horizontal Scaling
-- **Backend API**: Multiple replicas in EKS
-- **Database**: Read replicas for read-heavy workloads
+- **Backend API**: Multiple replicas in EKS (3 minimum, due to quorum)
+- **Database**: Standby replicas for HA, with possibility of turning read replicas on for read-heavy workloads
 - **MQTT**: AWS IoT Core auto-scales
 
 ### Vertical Scaling
@@ -241,10 +240,11 @@ Git Push → GitHub Actions → Build → Test → Deploy
 - **RDS**: Instance size upgrades
 - **Monitoring**: Resource allocation based on load
 
-### Performance Optimization
+### Performance Optimization (optional)
 - **Connection Pooling**: Database connections
-- **Caching**: Redis for frequently accessed data
-- **CDN**: CloudFront for static assets
+- **Queues**: For saving costs
+- **Kinesis**: If there is too much data in the future
+- **Caching**: Redis for frequently accessed data (historical)
 
 ## 🔍 Monitoring and Alerting
 
