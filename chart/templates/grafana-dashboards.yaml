@@ -1,0 +1,24 @@
+# This is optional, but I will add it to make it easier to configure the dashboards for the demo
+# I will use a single dashboard (dashboards/iot-dashboard.json) for the demo, that exemplifies
+# the data that is being collected and the metrics that are being collected
+{{- if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+data:
+  dashboard.yml: |
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /etc/grafana/provisioning/dashboards
+  iot-dashboard.json: |
+{{ .Files.Get "dashboards/iot-dashboard.json" | indent 4 }}
+{{- end }} 

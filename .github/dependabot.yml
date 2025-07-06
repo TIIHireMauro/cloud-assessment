@@ -1,0 +1,54 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "mauropimentel"
+    assignees:
+      - "mauropimentel"
+
+  - package-ecosystem: "npm"
+    directory: "/simulator"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "mauropimentel"
+    assignees:
+      - "mauropimentel"
+
+  # Enable version updates for Docker
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "mauropimentel"
+    assignees:
+      - "mauropimentel"
+
+  - package-ecosystem: "docker"
+    directory: "/simulator"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "mauropimentel"
+    assignees:
+      - "mauropimentel"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "mauropimentel"
+    assignees:
+      - "mauropimentel" 

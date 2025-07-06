@@ -47,3 +47,19 @@ data "aws_iot_endpoint" "iot_endpoint" {
 output "iot_core_endpoint" {
   value = data.aws_iot_endpoint.iot_endpoint.endpoint_address
 }
+
+output "backend_sa_role_arn" {
+  value = module.backend_irsa.iam_role_arn
+  description = "ARN of the IAM role for backend service account"
+}
+
+output "backend_iam_role_arn" {
+  value = module.backend_irsa.iam_role_arn
+  description = "ARN of the IAM role for backend service account (for ESO)"
+}
+
+# ECR Repository outputs
+output "backend_ecr_repository_url" {
+  value = module.ecr.repository_url
+  description = "URL of the backend ECR repository"
+}

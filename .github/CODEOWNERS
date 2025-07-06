@@ -1,0 +1,20 @@
+# Global owners
+* @mauropimentel
+
+# Backend specific
+/backend/ @mauropimentel
+
+# Simulator specific
+/simulator/ @mauropimentel
+
+# Infrastructure specific
+/infrastructure/ @mauropimentel
+
+# Helm charts
+/chart/ @mauropimentel
+
+# CI/CD workflows
+/.github/workflows/ @mauropimentel
+
+# Documentation
+/docs/ @mauropimentel 

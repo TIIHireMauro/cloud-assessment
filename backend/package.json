@@ -4,14 +4,17 @@
   "description": "Backend Microservice: MQTT ingestion, PostgreSQL storage, REST API, Prometheus metrics",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0",
+    "dev": "node src/index.js"
   },
   "author": "Mauro Pimentel",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mqtt": "^5.0.0",
+    "mqtt": "^5.3.5",
     "pg": "^8.13.3",
     "prom-client": "^15.1.3"
   }

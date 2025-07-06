@@ -1,0 +1,112 @@
+name: Manual Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      version:
+        description: 'Version to deploy (leave empty for latest)'
+        required: false
+        type: string
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REPOSITORY_BACKEND: iot-backend
+  ECR_REPOSITORY_SIMULATOR: iot-simulator
+  EKS_CLUSTER_NAME: iot-cluster
+
+jobs:
+  manual-deploy:
+    name: Manual Deploy to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:${{ github.event.inputs.version || github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Simulator image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./simulator
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_SIMULATOR }}:${{ github.event.inputs.version || github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_SIMULATOR }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Deploy with Helm
+        run: |
+          # Set image tags
+          BACKEND_IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:${{ github.event.inputs.version || github.sha }}"
+          SIMULATOR_IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_SIMULATOR }}:${{ github.event.inputs.version || github.sha }}"
+          
+          # Update values file
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            VALUES_FILE="chart/values-cloud.yaml"
+          else
+            VALUES_FILE="chart/values.yaml"
+          fi
+          
+          # Create temporary values file with updated images
+          cp $VALUES_FILE /tmp/values-temp.yaml
+          sed -i "s|backend:latest|$BACKEND_IMAGE|g" /tmp/values-temp.yaml
+          sed -i "s|simulator:latest|$SIMULATOR_IMAGE|g" /tmp/values-temp.yaml
+          
+          # Deploy to EKS
+          helm upgrade --install iot-system-${{ github.event.inputs.environment }} ./chart \
+            --values /tmp/values-temp.yaml \
+            --namespace iot-system-${{ github.event.inputs.environment }} \
+            --create-namespace \
+            --wait \
+            --timeout=10m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n iot-system-${{ github.event.inputs.environment }}
+          kubectl get services -n iot-system-${{ github.event.inputs.environment }}
+
+      - name: Notify deployment
+        run: |
+          echo "✅ Manual deployment to ${{ github.event.inputs.environment }} completed successfully!"
+          echo "Version: ${{ github.event.inputs.version || github.sha }}" 

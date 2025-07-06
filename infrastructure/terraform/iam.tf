@@ -22,20 +22,27 @@ resource "aws_iam_policy" "backend_secrets_policy" {
   name   = "backend-secrets-policy"
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow",
-      Action = [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret"
-      ],
-      Resource = module.rds.db_instance_master_user_secret_arn
-    }]
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecrets"
+        ],
+        Resource = data.aws_secretsmanager_secret.rds_password.arn
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecrets"
+        ],
+        Resource = "*"
+      }
+    ]
   })
-}
-
-resource "aws_iam_role" "backend_sa_role" {
-  name = "eks-backend-sa-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "backend_secrets_attach" {

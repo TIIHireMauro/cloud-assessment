@@ -22,6 +22,8 @@ spec:
             - name: mosquitto-config
               mountPath: /mosquitto/config/mosquitto.conf
               subPath: mosquitto.conf
+            - name: mosquitto-data
+              mountPath: /mosquitto/data
       volumes:
         - name: mosquitto-config
           configMap:
@@ -29,4 +31,6 @@ spec:
             items:
               - key: mosquitto.conf
                 path: mosquitto.conf
+        - name: mosquitto-data
+          emptyDir: {}
 {{- end }}

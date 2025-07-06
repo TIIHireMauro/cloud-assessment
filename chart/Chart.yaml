@@ -1,0 +1,15 @@
+apiVersion: v2
+name: tii-iot-assessment
+description: IoT Data Collector System for TII Assessment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - iot
+  - mqtt
+  - postgresql
+  - prometheus
+  - grafana
+maintainers:
+  - name: Mauro Pimentel
+    email: mauropimentel@hotmail.com

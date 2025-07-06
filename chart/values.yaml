@@ -32,15 +32,13 @@ backend:
     DB_PORT: "5432"
     DB_USER: "tiiassessment"
     DB_NAME: "tiiassessment"
-    # Important: I will not store the password in the values.yaml file, as it is not a good practice
-    # I will use a secret to store the password, and then I will reference it in the values.yaml file
-    # Don't forget to create the secret in the local cluster or in the cloud  
-    # example for local cluster: kubectl create secret generic db-secret --from-literal=DB_PASSWORD=<password>
-    # example for cloud: aws secretsmanager create-secret --name db-secret --secret-string '{"DB_PASSWORD":"<password>"}'
+    # Important: For local development, create a secret manually:
+    # kubectl create secret generic db-secret --from-literal=DB_PASSWORD=<password>
+    # For cloud, the password is managed automatically by RDS
     DB_PASSWORD_SECRET_NAME: "db-secret"
-    DB_PASSWORD_SECRET_KEY: "DB_PASSWORD"
     PORT: "3000"
-  
+
+    
 prometheus:
   enabled: true
   image: prom/prometheus:latest
@@ -48,3 +46,9 @@ prometheus:
 grafana:
   enabled: true
   image: grafana/grafana:latest
+
+# External Secrets Operator configuration
+externalSecrets:
+  enabled: false
+  aws:
+    region: "us-east-1"

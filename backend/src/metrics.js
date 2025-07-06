@@ -13,14 +13,14 @@ function incrementMqttMessages() {
   mqttMessagesCounter.inc();
 }
 
-// Gauge for the temperature
+// Example: Gauge for the temperature
 const temperatureGauge = new client.Gauge({
   name: 'sensor_temperature',
   help: 'Current temperature reported by sensors'
 });
 register.registerMetric(temperatureGauge);
 
-// Gauge for the humidity
+// Example: Gauge for the humidity
 const humidityGauge = new client.Gauge({
   name: 'sensor_humidity',
   help: 'Current humidity reported by sensors'

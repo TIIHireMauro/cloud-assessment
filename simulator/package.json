@@ -4,7 +4,10 @@
   "description": "For testing purposes: Sends random data every 2 seconds (replacing a real IoT device and providing data like temperature, humidity, etc) to the MQTT broker",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0",
+    "dev": "node index.js"
   },
   "author": "Mauro Pimentel",
   "license": "ISC",

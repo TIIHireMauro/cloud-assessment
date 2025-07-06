@@ -5,6 +5,8 @@
 # It publishes data to an IoT topic
 # It's not used in the project, but it's a good example of how to use Lambda and also will be used for demo purposes
 
+# Remember to put the "simulator.zip" file in the same directory as the terraform files before running the script
+
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda-exec-role"
   assume_role_policy = jsonencode({
@@ -29,6 +31,29 @@ resource "aws_iam_role_policy_attachment" "lambda_iot_publish" {
   policy_arn = "arn:aws:iam::aws:policy/AWSIoTFullAccess"
 }
 
+  # Specific policy for IoT Core
+resource "aws_iam_policy" "lambda_iot_policy" {
+  name   = "lambda-iot-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "iot:Connect",
+        "iot:Publish",
+        "iot:Subscribe",
+        "iot:Receive"
+      ]
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_iot_specific" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = aws_iam_policy.lambda_iot_policy.arn
+}
+
 resource "aws_lambda_function" "iot_simulator" {
   function_name = "simulator"
   description   = "Simulates an IoT device and publishes data to an IoT topic"
@@ -36,9 +61,11 @@ resource "aws_lambda_function" "iot_simulator" {
   runtime       = "nodejs20.x"
   role          = aws_iam_role.lambda_exec.arn
   filename      = "simulator.zip"
+  timeout       = 30
   environment {
     variables = {
-      MQTT_BROKER_URL = "tii-iot-core-endpoint.amazonaws.com"
+      # URL from IoT Core
+      MQTT_BROKER_URL = "ssl://${data.aws_iot_endpoint.iot_endpoint.endpoint_address}:8883"
       MQTT_TOPIC      = "iot/data"
       DEVICE_ID       = "sensor-lambda"
       PUBLISH_INTERVAL_MS = 2000

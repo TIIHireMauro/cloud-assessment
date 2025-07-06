@@ -54,7 +54,3 @@ variable "db_username" {
   default     = "tiiassessmentuser"
 }
 
-variable "db_password" {
-  description = "RDS master password"
-  sensitive   = true
-}

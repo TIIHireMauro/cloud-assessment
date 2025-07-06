@@ -16,6 +16,7 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: backend-sa
       containers:
         - name: backend
           image: {{ .Values.backend.image }}
@@ -40,7 +41,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.backend.env.DB_PASSWORD_SECRET_NAME }}
-                  key: {{ .Values.backend.env.DB_PASSWORD_SECRET_KEY }}
+                  name: {{ if .Values.externalSecrets.enabled }}db-password-secret{{ else }}{{ .Values.backend.env.DB_PASSWORD_SECRET_NAME }}{{ end }}
+                  key: DB_PASSWORD
 
 {{- end }}

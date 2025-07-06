@@ -7,25 +7,22 @@ postgres:
 
 mosquitto:
   enabled: false
-
 simulator:
   enabled: false
 
 backend:
-  image: <sua-conta>.dkr.ecr.eu-west-1.amazonaws.com/backend:latest
+  image: <account-id>.dkr.ecr.<region>.amazonaws.com/backend:latest
   replicas: 3
+  iamRoleArn: "arn:aws:iam::<account-id>:role/eks-backend-sa-role"
   env:
-    MQTT_BROKER_URL: "ssl://<endpoint-iot-core>:8883"
+    MQTT_BROKER_URL: "ssl://<iot-endpoint>:8883" # this is the endpoint of the IoT Core
     MQTT_TOPIC: "iot/data"
-    DB_HOST: "<endpoint-rds>"
+    DB_HOST: "<rds-endpoint>" # this is the endpoint of the RDS instance
     DB_PORT: "5432"
     DB_NAME: "tiiassessment"
     DB_USER: "tiiassessment"
-    # Important: I will not store the password in the values-cloud.yaml file, as it is not a good practice
-    # I will use a secret to store the password, and then I will reference it in the values-cloud.yaml file
-    # Don't forget to create the secret in the cloud
-    # example for cloud: aws secretsmanager create-secret --name db-secret --secret-string '{"DB_PASSWORD":"<password>"}'
-    DB_PASSWORD_SECRET_NAME: "db-secret"
+    # Here I'm using External Secrets Operator to get the password from AWS Secrets Manager
+    DB_PASSWORD_SECRET_NAME: "tii-assessment/db-password"
     DB_PASSWORD_SECRET_KEY: "DB_PASSWORD"
     PORT: "3000"
 
@@ -34,3 +31,12 @@ prometheus:
 
 grafana:
   enabled: true
+
+# External Secrets Operator configuration for cloud deployment
+externalSecrets:
+  enabled: true
+  aws:
+    region: "<region>"
+
+
+

@@ -10,23 +10,23 @@ const client = mqtt.connect(brokerUrl);
 
 client.on('connect', () => {
   console.log(`Connected to MQTT broker at ${brokerUrl}`);
-  setInterval(() => {
-    // Generate random data
-    const payload = {
-      deviceId: "sensor-local",
-      temperature: (20 + Math.random() * 10).toFixed(2),
-      humidity: (40 + Math.random() * 20).toFixed(2),
-      timestamp: new Date().toISOString()
-    };
-    // Publish to topic
-    client.publish(topic, JSON.stringify(payload), { qos: 0 }, (err) => {
-      if (err) {
-        console.error('Simulator has failed to publish:', err);
-      } else {
-        console.log('Simulator has published:', payload);
-      }
-    });
-  }, interval);
+setInterval(() => {
+  // Generate random data
+  const payload = {
+  deviceId: "sensor-local",
+    temperature: (20 + Math.random() * 10).toFixed(2),
+    humidity: (40 + Math.random() * 20).toFixed(2),
+    timestamp: new Date().toISOString()
+  };
+  // Publish to topic
+  client.publish(topic, JSON.stringify(payload), { qos: 0 }, (err) => {
+    if (err) {
+      console.error('Simulator has failed to publish:', err);
+    } else {
+      console.log('Simulator has published:', payload);
+  }
+      });
+}, interval);
 });
 
 client.on('error', (err) => {

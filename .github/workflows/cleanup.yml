@@ -1,0 +1,129 @@
+name: Cleanup Old Resources
+
+on:
+  schedule:
+    # Run every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REPOSITORY_BACKEND: iot-backend
+  ECR_REPOSITORY_SIMULATOR: iot-simulator
+
+jobs:
+  cleanup-ecr:
+    name: Cleanup Old ECR Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Cleanup old ECR images
+        run: |
+          # Cleanup backend images older than 30 days
+          aws ecr describe-images \
+            --repository-name ${{ env.ECR_REPOSITORY_BACKEND }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'imageDetails[?imagePushedAt<`'$(date -d '30 days ago' -u +%Y-%m-%dT%H:%M:%S)`'`].imageDigest' \
+            --output text | \
+          while read digest; do
+            if [ ! -z "$digest" ]; then
+              echo "Deleting image: $digest"
+              aws ecr batch-delete-image \
+                --repository-name ${{ env.ECR_REPOSITORY_BACKEND }} \
+                --region ${{ env.AWS_REGION }} \
+                --image-ids imageDigest=$digest
+            fi
+          done
+
+          # Cleanup simulator images older than 30 days
+          aws ecr describe-images \
+            --repository-name ${{ env.ECR_REPOSITORY_SIMULATOR }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'imageDetails[?imagePushedAt<`'$(date -d '30 days ago' -u +%Y-%m-%dT%H:%M:%S)`'`].imageDigest' \
+            --output text | \
+          while read digest; do
+            if [ ! -z "$digest" ]; then
+              echo "Deleting image: $digest"
+              aws ecr batch-delete-image \
+                --repository-name ${{ env.ECR_REPOSITORY_SIMULATOR }} \
+                --region ${{ env.AWS_REGION }} \
+                --image-ids imageDigest=$digest
+            fi
+          done
+
+  cleanup-github-runs:
+    name: Cleanup Old GitHub Actions Runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup old workflow runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            for (const run of runs.workflow_runs) {
+              if (new Date(run.created_at) < thirtyDaysAgo && run.status === 'completed') {
+                console.log(`Deleting old run: ${run.id} from ${run.created_at}`);
+                await github.rest.actions.deleteWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: run.id
+                });
+              }
+            }
+
+  cleanup-eks-logs:
+    name: Cleanup EKS Logs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name iot-cluster
+
+      - name: Cleanup old logs
+        run: |
+          # Cleanup old pod logs (keep last 7 days)
+          kubectl get pods --all-namespaces -o json | \
+          jq -r '.items[] | select(.metadata.creationTimestamp < "'$(date -d '7 days ago' -u +%Y-%m-%dT%H:%M:%SZ)'") | .metadata.namespace + "/" + .metadata.name' | \
+          while read pod; do
+            if [ ! -z "$pod" ]; then
+              namespace=$(echo $pod | cut -d'/' -f1)
+              name=$(echo $pod | cut -d'/' -f2)
+              echo "Cleaning logs for pod: $namespace/$name"
+              kubectl logs $name -n $namespace --since=7d > /dev/null 2>&1 || true
+            fi
+          done
+
+  notify-cleanup:
+    name: Notify Cleanup Completion
+    runs-on: ubuntu-latest
+    needs: [cleanup-ecr, cleanup-github-runs, cleanup-eks-logs]
+    if: always()
+    steps:
+      - name: Notify cleanup status
+        run: |
+          if [ "${{ needs.cleanup-ecr.result }}" = "success" ] && \
+             [ "${{ needs.cleanup-github-runs.result }}" = "success" ] && \
+             [ "${{ needs.cleanup-eks-logs.result }}" = "success" ]; then
+            echo "✅ Cleanup completed successfully!"
+          else
+            echo "⚠️ Some cleanup jobs failed. Check the logs for details." 

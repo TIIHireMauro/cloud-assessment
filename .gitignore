@@ -1,6 +1,9 @@
 node_modules/
 .env
+.env.local
 .terraform
 .terraform.lock.hcl
+.tfstate
+.tfstate.backup
 *.log
 .DS_Store

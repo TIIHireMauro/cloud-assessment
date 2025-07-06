@@ -1,0 +1,18 @@
+{{- if .Values.prometheus.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'backend'
+        static_configs:
+          - targets: ['backend:3000']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+{{- end }} 
