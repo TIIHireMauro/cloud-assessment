@@ -1,0 +1,53 @@
+# This values-cloud.yaml is used to override the default values for the chart
+
+# in this demo, I will disable all services except backend, prometheus and grafana
+# because I will use the cloud services for the rest
+postgres:
+  enabled: false
+
+mosquitto:
+  enabled: false
+
+simulator:
+  enabled: false
+  image: 739275473535.dkr.ecr.eu-west-1.amazonaws.com/simulator:latest
+  # I'm using the same service account as the backend to simplify the demo
+  serviceAccount:
+    name: backend-sa
+  env:
+    MQTT_BROKER_URL: "wss://ap175yihlxp80-ats.iot.eu-west-1.amazonaws.com/mqtt"
+    MQTT_TOPIC: "iot/data"
+    PUBLISH_INTERVAL_MS: "2000"
+
+backend:
+  image: 739275473535.dkr.ecr.eu-west-1.amazonaws.com/backend:latest
+  replicas: 3
+  iamRoleArn: "arn:aws:iam::739275473535:role/eks-backend-sa-role"
+  env:
+    MQTT_BROKER_URL: "wss://ap175yihlxp80-ats.iot.eu-west-1.amazonaws.com/mqtt" # endpoint correto para AWS IoT Core via WebSocket
+    MQTT_TOPIC: "iot/data"
+    DB_HOST: "tii-assessment-db.cdkkqwqksmk5.eu-west-1.rds.amazonaws.com" # this is the endpoint of the RDS instance
+    DB_PORT: "5432"
+    DB_NAME: "tiiassessmentdb"
+    DB_USER: "tiiassessmentuser"
+    # Here I'm using External Secrets Operator to get the password from AWS Secrets Manager
+    DB_PASSWORD_SECRET_NAME: "tii-assessment/db-password"
+    DB_PASSWORD_SECRET_KEY: "DB_PASSWORD"
+    PORT: "3000"
+    DB_SSL: "true"
+
+prometheus:
+  enabled: true
+
+grafana:
+  enabled: true
+
+# External Secrets Operator configuration for cloud deployment
+externalSecrets:
+  enabled: true
+  aws:
+    region: "eu-west-1"
+
+
+
+

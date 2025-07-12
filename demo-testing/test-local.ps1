@@ -13,7 +13,7 @@
 # - kubectl
 
 # Navigate to the project root directory
-Push-Location ..
+# Push-Location ..
 
 Write-Host 'Starting Local Tests - TII IoT Assessment (Kind)' -ForegroundColor Cyan
 Write-Host '=================================================' -ForegroundColor Cyan
@@ -353,7 +353,7 @@ Start-Sleep -Seconds 15
 # Check if there's data in the database
 Write-Log 'Checking data in database...'
 $dbPod = kubectl get pods -l app=postgres -o jsonpath='{.items[0].metadata.name}'
-$dbResult = kubectl exec $dbPod -- psql -U tiiassessment -d tiiassessment -c 'SELECT COUNT(*) FROM iot_data;'
+$dbResult = kubectl exec $dbPod -- psql -U tiiassessmentuser -d tiiassessmentdb -c 'SELECT COUNT(*) FROM iot_data;'
 
 if ($dbResult -match '[1-9]') {
     Write-Success 'IoT data is being inserted into database'
@@ -393,7 +393,7 @@ Write-Host 'View backend logs:     kubectl logs -f deployment/backend' -Foregrou
 Write-Host 'View simulator logs:   kubectl logs -f deployment/simulator' -ForegroundColor White
 Write-Host 'View Prometheus logs:  kubectl logs -f deployment/prometheus' -ForegroundColor White
 Write-Host 'View Grafana logs:     kubectl logs -f deployment/grafana' -ForegroundColor White
-Write-Host 'Access database:       kubectl exec -it deployment/postgres -- psql -U tiiassessment -d tiiassessment' -ForegroundColor White
+Write-Host 'Access database:       kubectl exec -it deployment/postgres -- psql -U tiiassessmentuser -d tiiassessmentdb' -ForegroundColor White
 Write-Host 'Check kind cluster:    kind get clusters' -ForegroundColor White
 Write-Host 'Stop kind cluster:     kind delete cluster --name iot-local'  -ForegroundColor White
 

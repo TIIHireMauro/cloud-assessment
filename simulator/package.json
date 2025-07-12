@@ -12,7 +12,7 @@
   "author": "Mauro Pimentel",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "mqtt": "^5.0.0"
+    "dotenv": "^16.6.1",
+    "mqtt": "^4.3.8"
   }
 }

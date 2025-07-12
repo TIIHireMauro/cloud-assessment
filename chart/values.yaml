@@ -3,8 +3,8 @@ postgres:
   enabled: true
   image: postgres:16-alpine
   db:
-    name: tiiassessment
-    user: tiiassessment
+    name: tiiassessmentdb
+    user: tiiassessmentuser
     password: dontforgettoprotectme
   persistence:
     enabled: false
@@ -30,13 +30,14 @@ backend:
     MQTT_TOPIC: "iot/data"
     DB_HOST: "postgres"
     DB_PORT: "5432"
-    DB_USER: "tiiassessment"
-    DB_NAME: "tiiassessment"
+    DB_USER: "tiiassessmentuser"
+    DB_NAME: "tiiassessmentdb"
     # Important: For local development, create a secret manually:
     # kubectl create secret generic db-secret --from-literal=DB_PASSWORD=<password>
     # For cloud, the password is managed automatically by RDS
     DB_PASSWORD_SECRET_NAME: "db-secret"
     PORT: "3000"
+    DB_SSL: "false"
 
     
 prometheus:

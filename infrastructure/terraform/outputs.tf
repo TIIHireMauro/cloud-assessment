@@ -27,11 +27,13 @@ output "rds_master_user_secret_arn" {
   value = module.rds.db_instance_master_user_secret_arn
 }
 
+output "rds_master_username" {
+  value = var.db_username
+}
 
 output "lambda_simulator_arn" {
   value = aws_lambda_function.iot_simulator.arn
 }
-
 output "iot_core_thing_name" {
   value = aws_iot_thing.sensor.name
 }
@@ -62,4 +64,13 @@ output "backend_iam_role_arn" {
 output "backend_ecr_repository_url" {
   value = module.ecr.repository_url
   description = "URL of the backend ECR repository"
+}
+
+output "ecr_simulator_repository_url" {
+  value = aws_ecr_repository.simulator.repository_url
+}
+
+output "simulator_iam_role_arn" {
+  value = module.simulator_irsa.iam_role_arn
+  description = "ARN of the IAM role for simulator service account"
 }

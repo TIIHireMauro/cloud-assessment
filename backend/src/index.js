@@ -4,7 +4,13 @@ const routes = require('./routes');
 const { register } = require('./metrics');
 
 // Starts MQTT client and DB ingestion
-require('./mqttClient');
+try {
+  console.log('Starting MQTT client...');
+  require('./mqttClient');
+  console.log('MQTT client started successfully');
+} catch (error) {
+  console.error('Error starting MQTT client:', error);
+}
 
 // Starts the server
 const app = express();

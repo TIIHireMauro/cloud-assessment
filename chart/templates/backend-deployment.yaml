@@ -43,5 +43,7 @@ spec:
                 secretKeyRef:
                   name: {{ if .Values.externalSecrets.enabled }}db-password-secret{{ else }}{{ .Values.backend.env.DB_PASSWORD_SECRET_NAME }}{{ end }}
                   key: DB_PASSWORD
+            - name: DB_SSL
+              value: {{ .Values.backend.env.DB_SSL | quote }}
 
 {{- end }}
