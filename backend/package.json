@@ -14,7 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.844.0",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "mqtt": "^5.3.5",
     "pg": "^8.13.3",
     "prom-client": "^15.1.3"
