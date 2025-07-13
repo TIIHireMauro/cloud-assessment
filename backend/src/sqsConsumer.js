@@ -1,5 +1,6 @@
 const { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } = require('@aws-sdk/client-sqs');
-const { insertData, incrementMqttMessages, temperatureGauge, humidityGauge } = require('./metrics');
+const { insertData } = require('./db');
+const { incrementMqttMessages, temperatureGauge, humidityGauge } = require('./metrics');
 
 const sqsUrl = process.env.AWS_SQS_URL;
 const region = process.env.AWS_REGION || 'eu-west-1';

@@ -444,6 +444,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Success "External Secrets Operator installed successfully"
 
 Write-Log "Installing/updating application via Helm..."
+helm upgrade --install tii-assessment-cloud chart/ --values chart/values-cloud-temp.yaml --wait
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Error installing/updating Helm chart"
     exit 1
