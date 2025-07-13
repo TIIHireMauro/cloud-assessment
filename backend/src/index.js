@@ -28,3 +28,8 @@ app.get('/metrics', async (req, res) => {
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
 });
+
+if (process.env.CONSUME_SQS === 'true') {
+  const { pollSQS } = require('./sqsConsumer');
+  pollSQS();
+}

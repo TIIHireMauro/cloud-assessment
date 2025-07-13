@@ -38,6 +38,9 @@ backend:
     DB_PASSWORD_SECRET_NAME: "db-secret"
     PORT: "3000"
     DB_SSL: "false"
+    CONSUME_SQS: "false"
+    AWS_SQS_URL: ""
+    AWS_REGION: ""
 
     
 prometheus:

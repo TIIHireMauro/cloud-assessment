@@ -75,6 +75,30 @@ resource "aws_iam_role_policy_attachment" "backend_iot_attach" {
   policy_arn = aws_iam_policy.backend_iot_policy.arn
 }
 
+# Policy for SQS
+resource "aws_iam_policy" "backend_sqs_policy" {
+  name   = "backend-sqs-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "backend_sqs_attach" {
+  role       = module.backend_irsa.iam_role_name
+  policy_arn = aws_iam_policy.backend_sqs_policy.arn
+}
+
 # Policy para push ECR
 resource "aws_iam_policy" "ecr_push_policy" {
   name   = "ecr-push-policy"

@@ -45,5 +45,11 @@ spec:
                   key: DB_PASSWORD
             - name: DB_SSL
               value: {{ .Values.backend.env.DB_SSL | quote }}
+            - name: CONSUME_SQS
+              value: {{ .Values.backend.env.CONSUME_SQS | quote }}
+            - name: AWS_SQS_URL
+              value: {{ .Values.backend.env.AWS_SQS_URL | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.backend.env.AWS_REGION | quote }}
 
 {{- end }}

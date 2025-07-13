@@ -94,7 +94,7 @@ module "rds" {
 
   identifier = "tii-assessment-db"
   engine     = "postgres"
-  engine_version = "16.4"
+  engine_version = "16.8"
   # I'm using the smallest instance class to keep the cost low for the demo
   instance_class = "db.t3.small"
   allocated_storage = 20
