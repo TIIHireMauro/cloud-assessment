@@ -2,7 +2,7 @@ const { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } = require('@aws
 const { insertData, incrementMqttMessages, temperatureGauge, humidityGauge } = require('./metrics');
 
 const sqsUrl = process.env.AWS_SQS_URL;
-const region = process.env.AWS_REGION || 'us-east-1';
+const region = process.env.AWS_REGION || 'eu-west-1';
 const client = new SQSClient({ region });
 
 async function pollSQS() {
@@ -30,7 +30,7 @@ async function pollSQS() {
         }
       }
     } catch (err) {
-      console.error('Erro ao consumir SQS:', err);
+      console.error('Error consuming SQS:', err);
     }
   }
 }
