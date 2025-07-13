@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY_BACKEND: backend
-  ECR_REPOSITORY_SIMULATOR: iot-simulator
+  ECR_REPOSITORY_SIMULATOR: simulator
   EKS_CLUSTER_NAME: iot-cluster
 
 jobs:
