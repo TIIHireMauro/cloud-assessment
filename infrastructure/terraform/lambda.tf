@@ -31,9 +31,9 @@ resource "aws_iam_role_policy_attachment" "lambda_iot_publish" {
   policy_arn = "arn:aws:iam::aws:policy/AWSIoTFullAccess"
 }
 
-  # Specific policy for IoT Core
+# Specific policy for IoT Core
 resource "aws_iam_policy" "lambda_iot_policy" {
-  name   = "lambda-iot-policy"
+  name = "lambda-iot-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -65,9 +65,9 @@ resource "aws_lambda_function" "iot_simulator" {
   environment {
     variables = {
       # URL from IoT Core
-      MQTT_BROKER_URL = "ssl://${data.aws_iot_endpoint.iot_endpoint.endpoint_address}:8883"
-      MQTT_TOPIC      = "iot/data"
-      DEVICE_ID       = "sensor-lambda"
+      MQTT_BROKER_URL     = "ssl://${data.aws_iot_endpoint.iot_endpoint.endpoint_address}:8883"
+      MQTT_TOPIC          = "iot/data"
+      DEVICE_ID           = "sensor-lambda"
       PUBLISH_INTERVAL_MS = 2000
     }
   }

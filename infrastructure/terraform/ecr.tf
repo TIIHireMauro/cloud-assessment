@@ -9,8 +9,8 @@ data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "ecr_repository" {
   statement {
-    sid    = "AllowAllActionsForAccount"
-    effect = "Allow"
+    sid     = "AllowAllActionsForAccount"
+    effect  = "Allow"
     actions = ["ecr:*"]
     principals {
       type        = "AWS"
@@ -24,8 +24,8 @@ module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "2.0.0"
 
-  repository_name = "backend"
-  repository_force_delete = true
+  repository_name                 = "backend"
+  repository_force_delete         = true
   repository_image_tag_mutability = "MUTABLE"
   repository_lifecycle_policy = jsonencode({
     rules = [
@@ -46,10 +46,10 @@ module "ecr" {
         rulePriority = 2
         description  = "Keep only 5 tagged images per tag (allows mutable tags)"
         selection = {
-          tagStatus   = "tagged"
+          tagStatus     = "tagged"
           tagPrefixList = ["latest", "v"]
-          countType   = "imageCountMoreThan"
-          countNumber = 5
+          countType     = "imageCountMoreThan"
+          countNumber   = 5
         }
         action = {
           type = "expire"

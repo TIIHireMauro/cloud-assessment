@@ -68,7 +68,7 @@ resource "aws_db_parameter_group" "postgres" {
 # This is for demo purposes only. In production, RDS should manage its own password
 data "aws_secretsmanager_secret" "rds_password" {
   name = "tii-assessment/db-password"
-  
+
   # This secret must be created manually or by the test-cloud.ps1 script before running Terraform
   # For production environments, it's recommended to let RDS manage its own password automatically
   # by removing the manage_master_user_password = false and password parameters
@@ -92,17 +92,17 @@ module "rds" {
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 6.5.0"
 
-  identifier = "tii-assessment-db"
-  engine     = "postgres"
+  identifier     = "tii-assessment-db"
+  engine         = "postgres"
   engine_version = "16.8"
   # I'm using the smallest instance class to keep the cost low for the demo
-  instance_class = "db.t3.small"
+  instance_class    = "db.t3.small"
   allocated_storage = 20
-  family = "postgres16"
+  family            = "postgres16"
 
   db_name  = var.db_name
   username = var.db_username
-  
+
   # IMPORTANT: For production environments, it's highly recommended to let RDS manage its own password
   # by setting manage_master_user_password = true and removing the password parameter.
   # This enables automatic password rotation and better security practices.
@@ -111,15 +111,15 @@ module "rds" {
   # The secret "tii-assessment/db-password" must be created by the test-cloud.ps1 script
   # or manually in AWS Secrets Manager before running this Terraform configuration.
   manage_master_user_password = false
-  password = local.db_password
+  password                    = local.db_password
 
   port = 5432
 
   # RDS is in the same VPC as the EKS cluster, so we can use the default security group
-  multi_az                = true
+  multi_az               = true
   vpc_security_group_ids = [aws_security_group.rds.id]
   # Using groups helps to balance the connection from EKS to RDS in multiple AZs
-  db_subnet_group_name   = module.vpc.database_subnet_group
+  db_subnet_group_name = module.vpc.database_subnet_group
 
   # Using a custom parameter group
   parameter_group_name = aws_db_parameter_group.postgres.name

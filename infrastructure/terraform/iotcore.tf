@@ -44,6 +44,6 @@ resource "aws_iot_thing_principal_attachment" "sensor_attach" {
 
 # IOT Core policy attachment
 resource "aws_iot_policy_attachment" "sensor_policy_attach" {
-  policy    = aws_iot_policy.sensor_policy.name
-  target    = aws_iot_certificate.sensor_cert.arn
+  policy = aws_iot_policy.sensor_policy.name
+  target = aws_iot_certificate.sensor_cert.arn
 }

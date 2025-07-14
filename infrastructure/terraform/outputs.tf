@@ -51,18 +51,18 @@ output "iot_core_endpoint" {
 }
 
 output "backend_sa_role_arn" {
-  value = module.backend_irsa.iam_role_arn
+  value       = module.backend_irsa.iam_role_arn
   description = "ARN of the IAM role for backend service account"
 }
 
 output "backend_iam_role_arn" {
-  value = module.backend_irsa.iam_role_arn
+  value       = module.backend_irsa.iam_role_arn
   description = "ARN of the IAM role for backend service account (for ESO)"
 }
 
 # ECR Repository outputs
 output "backend_ecr_repository_url" {
-  value = module.ecr.repository_url
+  value       = module.ecr.repository_url
   description = "URL of the backend ECR repository"
 }
 
@@ -71,6 +71,6 @@ output "ecr_simulator_repository_url" {
 }
 
 output "simulator_iam_role_arn" {
-  value = module.simulator_irsa.iam_role_arn
+  value       = module.simulator_irsa.iam_role_arn
   description = "ARN of the IAM role for simulator service account"
 }

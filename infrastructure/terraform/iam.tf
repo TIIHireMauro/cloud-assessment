@@ -19,7 +19,7 @@ module "backend_irsa" {
 
 # This is a policy to allow the backend service account to access the secrets manager
 resource "aws_iam_policy" "backend_secrets_policy" {
-  name   = "backend-secrets-policy"
+  name = "backend-secrets-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "backend_secrets_attach" {
 
 # Policy para IoT Core
 resource "aws_iam_policy" "backend_iot_policy" {
-  name   = "backend-iot-policy"
+  name = "backend-iot-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -77,7 +77,7 @@ resource "aws_iam_role_policy_attachment" "backend_iot_attach" {
 
 # Policy for SQS
 resource "aws_iam_policy" "backend_sqs_policy" {
-  name   = "backend-sqs-policy"
+  name = "backend-sqs-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -101,7 +101,7 @@ resource "aws_iam_role_policy_attachment" "backend_sqs_attach" {
 
 # Policy para push ECR
 resource "aws_iam_policy" "ecr_push_policy" {
-  name   = "ecr-push-policy"
+  name = "ecr-push-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -150,7 +150,7 @@ module "simulator_irsa" {
 
 # Policy para IoT Core (simulador)
 resource "aws_iam_policy" "simulator_iot_policy" {
-  name   = "simulator-iot-policy"
+  name = "simulator-iot-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
