@@ -12,7 +12,7 @@
   "author": "Mauro Pimentel",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.844.0",
+    "@aws-sdk/client-sqs": "^3.848.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mqtt": "^5.3.5",
